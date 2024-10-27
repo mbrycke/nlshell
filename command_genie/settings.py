@@ -82,3 +82,18 @@ def get_model():
             model = DEFAULT_MODEL
         set_config("default", "model", model)
     return model
+
+
+def get_api_key():
+    """
+    Retrieve the API key from the settings file.
+    If the API key is not set, get input from the user.
+    """
+
+    api_key = get_config("default","api_key")
+    if not api_key:
+        api_key = input(
+            f"API key for OpenAI is not set. \nEnter the API key for the API: "
+        )
+        set_config("default","api_key",api_key)
+    return api_key

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "command-genie"
+version = "0.1.0"
+description = "Creates shell command from a description using an LLM"
+authors = ["mbrycke <mattias.brycke@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.52.2"
+
+[tool.poetry.scripts]
+c = "command_genie.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

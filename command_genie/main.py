@@ -6,9 +6,16 @@ import pydantic
 import readline
 from openai import OpenAI
 from pydantic import BaseModel
-from settings import handle_warning_message, set_config, get_base_url, get_model
+from command_genie.settings import (
+    handle_warning_message,
+    set_config,
+    get_base_url,
+    get_model,
+    get_api_key,
+)
 
 N_GENERATION_ATTEMPTS = 3
+
 
 class Command(BaseModel):
     command: str
@@ -27,7 +34,7 @@ def extract_json_content(s):
 
 
 # TODO: implement `return_format` when available
-def generate_command(prompt, url, model="qwen2.5-coder:7b"):
+def generate_command(prompt, url, model="qwen2.5-coder:7b", api_key="abc123"):
     """
     Use the OpenAI client to generate a command.
 
@@ -39,7 +46,7 @@ def generate_command(prompt, url, model="qwen2.5-coder:7b"):
         dict: A dictionary containing the generated command and an explanation.
     """
 
-    client = OpenAI(api_key="abc123", base_url=url)
+    client = OpenAI(api_key=api_key, base_url=url)
 
     try:
         response = client.chat.completions.create(
@@ -85,6 +92,7 @@ def add_to_history(command):
     with open(os.path.expanduser("~/.bash_history"), "a") as f:
         f.write(command + "\n")
 
+
 def parse_arguments():
 
     parser = argparse.ArgumentParser(
@@ -124,10 +132,11 @@ def parse_arguments():
 
     return parser
 
+
 def main():
 
     parser = parse_arguments()
-    args=parser.parse_args()
+    args = parser.parse_args()
 
     command_instr = " ".join(
         args.description_str
@@ -157,10 +166,11 @@ def main():
 
     url = get_base_url()
     model = get_model()
+    api_key = get_api_key()
 
     # _instr Try to generate a valid command N_GENERATION_ATTEMPTS times
     for _ in range(N_GENERATION_ATTEMPTS):
-        json_command = generate_command(command_instr, url, model)
+        json_command = generate_command(command_instr, url, model, api_key=api_key)
         try:
             _ = Command(**json_command)  # check if the generated command is valid
             break
