@@ -6,7 +6,7 @@ import pydantic
 import readline
 from openai import OpenAI
 from pydantic import BaseModel
-from command_genie.settings import (
+from nlshell.settings import (
     handle_warning_message,
     set_config,
     get_base_url,
