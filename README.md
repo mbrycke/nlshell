@@ -12,7 +12,7 @@ Useses an LLM model to generate the shell commands.
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
-- [Contact](#contact)
+- [GitHub](#github)
 
 ## Installation
 
@@ -33,7 +33,11 @@ Activate the virtual environment where the package is installed to use the nlshe
 
 
 ### Set the base_url
-The package uses the openai client to call an LLM. By specifying a `base_url` you can use your own model, e.g. a local model.
+The package uses the openai client to call an LLM. By specifying a `base-url` you can use your own model, e.g. a local model.
+```shell
+c --base-url http://localhost:11434/v1
+```
+If no `base_url` is explicitly set, the package will ask which url to use.
 
 
 ### Create a command
@@ -47,21 +51,17 @@ The 'ls' command lists directory contents. The option '-l' provides a long listi
 $ ls -la
 ```
 
-```shell
-c --base_url http://localhost:8000 
-```
-If no `base_url` is explicitly set, the package will ask which url to use.
 
 ### Set the api_key
 ```shell
-c --api_key your-api-key
+c --api-key your-api-key
 ```
 Even if you run a local model you need to set an api_key since the openai client requires it, even if the key is just a dummy key.
 
 ### Set the model
 
 ```shell
-c --model_name qwen2.5-coder:7b
+c --model-name qwen2.5-coder:7b
 ```
 If no model is specified the package will ask which model to use.
 
@@ -71,3 +71,4 @@ If no model is specified the package will ask which model to use.
 Distributed under the MIT License. See `LICENSE` for more information.      
 
 ## GitHub
+[https://github.com/mbrycke/nlshell](https://github.com/mbrycke/nlshell)
