@@ -98,7 +98,6 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Generates a shell command from a description."
     )
-    # parser.add_argument('command', type=str, help='The shell command to run.')
     parser.add_argument(
         "description_str",
         nargs="*",
@@ -178,7 +177,7 @@ def main():
     model = get_model()
     api_key = get_api_key()
 
-    # _instr Try to generate a valid command N_GENERATION_ATTEMPTS times
+    # Try to generate a valid command N_GENERATION_ATTEMPTS times
     for _ in range(N_GENERATION_ATTEMPTS):
         json_command = generate_command(command_instr, url, model, api_key=api_key)
         try:
