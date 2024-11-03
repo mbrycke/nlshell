@@ -2,7 +2,7 @@
 name = "nlshell"
 version = "0.1.0"
 description = "Creates shell command from a description using an LLM"
-authors = ["mbrycke <mattias.brycke@gmail.com>"]
+authors = ["Mattias Brycke <mattias.brycke@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
