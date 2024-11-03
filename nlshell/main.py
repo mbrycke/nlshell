@@ -130,6 +130,12 @@ def parse_arguments():
         help="Set the model for the OpenAI API.",
     )
 
+    parser.add_argument(
+        "--api-key",
+        type=str,
+        help="Set the API key for the OpenAI API.",
+    )
+
     return parser
 
 
@@ -157,6 +163,10 @@ def main():
     if args.set_model:
         set_config("default", "model", args.set_model)
         return
+    
+    if args.api_key:
+        set_config("default", "api_key", args.api_key)
+        return 
 
     if command_instr == "" or command_instr == "--help" or command_instr == "-h":
         parser.print_help()

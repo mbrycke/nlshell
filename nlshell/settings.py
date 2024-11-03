@@ -2,7 +2,7 @@ import configparser
 import functools
 import os
 
-SETTINGS_FILE_PATH = os.path.expanduser("~/.config/command-geni/settings.ini")
+SETTINGS_FILE_PATH = os.path.expanduser("~/.config/nlshell/settings.ini")
 DEFAULT_URL = "http://localhost:11434/v1"  # default url for local ollama
 DEFAULT_MODEL = "qwen2.5-coder:7b"
 
