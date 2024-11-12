@@ -3,7 +3,7 @@
 A very small Python package that generates shell commands from a "natural language" description.
 It will provide a explanation of the command and prefill the command line with the generated command.
 
-Useses an LLM model to generate the shell commands.
+You must provide a url to an openai compatible api, e.g. a local model served by e.g. Ollama, or a remote model.
 
 ### _IMPORTANT! Never run a generated command without understanding what it does. The generated command may be harmful. There is no guarantee whatsoever that what the LLM suggests is correct! DON'T BLINDLY TRUST THE GENERATED SUGGESTION!_
 
