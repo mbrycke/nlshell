@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nlshell"
-version = "0.1.0"
+version = "0.1.1"
 description = "Creates shell command from a description using an LLM"
 authors = ["Mattias Brycke <mattias.brycke@gmail.com>"]
 license = "MIT"
