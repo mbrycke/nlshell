@@ -5,6 +5,8 @@ import os
 import pydantic
 import readline
 from openai import OpenAI
+from prompt_toolkit import prompt
+from prompt_toolkit.document import Document
 from pydantic import BaseModel
 from nlshell.settings import (
     handle_warning_message,
@@ -34,7 +36,7 @@ def extract_json_content(s):
 
 
 # TODO: implement `return_format` when available
-def generate_command(prompt, url, model="qwen2.5-coder:7b", api_key="abc123"):
+def generate_command(prompt, url, model="qwen3:8b", api_key="abc123"):
     """
     Use the OpenAI client to generate a command.
 
@@ -52,12 +54,10 @@ def generate_command(prompt, url, model="qwen2.5-coder:7b", api_key="abc123"):
         response = client.chat.completions.create(
             model=model,
             messages=[
-                {
-                    "role": "system",
-                    "content": 'Answer with a linux shell command. The answer should be json in the form {"command": <command>, "explanation":<explanation>}',
-                },
-                {"role": "user", "content": prompt},
-            ],
+                { "role": "system", "content": 'Answer with a linux shell command. The answer should be json in the form {"command": <command>, "explanation":<explanation>}' },
+                { "role": "user", "content": prompt }
+                ],
+            response_format={"type":"json_object"},
         )
     except openai.APIConnectionError as e:
         print(
@@ -73,24 +73,33 @@ def generate_command(prompt, url, model="qwen2.5-coder:7b", api_key="abc123"):
         print("Error decoding json: ", e)
 
 
-def prefill_input(prefill_text):
-    def hook():
-        readline.insert_text(prefill_text)
+# def prefill_input(prefill_text):
+#     def hook():
+#         readline.insert_text(prefill_text)
 
-    # Set the hook to prefill the input
-    readline.set_startup_hook(hook)
+#     # Set the hook to prefill the input
+#     readline.set_startup_hook(hook)
 
-    try:
-        return input("$ ")  # Print the prompt once, let readline handle the rest
-    finally:
-        readline.set_startup_hook()  # Clear the hook after use
+#     try:
+#         return input(f"$ ")  # Print the prompt once, let readline handle the rest
+#     finally:
+#         # Clear the hook after use. Must pass None to remove the hook.
+#         readline.set_startup_hook(None)
 
 
 def add_to_history(command):
-    # history is stored in ~/.bash_history
-    readline.add_history(command)
-    with open(os.path.expanduser("~/.bash_history"), "a") as f:
-        f.write(command + "\n")
+    """This is actually a bit tricky since the history is not updated in the current shell
+    but in the shell that is spawned by the subprocess.
+    We could add the command to the history file but the history file would
+    then need to be reloaded in the current shell. I'll have to think about this.
+    """
+    import subprocess
+    subprocess.run(f'history -s "{command}"', shell=True, executable="/usr/bin/bash")
+    subprocess.run(f'history -w', shell=True, executable="/usr/bin/bash")
+
+
+def input_with_prefill(prompt_text, prefill=''):
+    return prompt(prompt_text, default=prefill)
 
 
 def parse_arguments():
@@ -173,8 +182,8 @@ def main():
 
     handle_warning_message()
 
-    url = get_base_url()
-    model = get_model()
+    url = get_base_url(local=True)
+    model = get_model(local=True)
     api_key = get_api_key()
 
     # Try to generate a valid command N_GENERATION_ATTEMPTS times
@@ -192,6 +201,10 @@ def main():
     print(
         "\033[90m" + json_command["explanation"] + "\033[0m"
     )  # Print the explanation in gray
-    edited_command = prefill_input(json_command["command"])
-    add_to_history(edited_command)  # Add the command to the history
-    os.system(edited_command)
+    add_to_history(json_command["command"])  # Add the command to the history
+    try:
+        command=input_with_prefill("$ ", prefill=json_command["command"])
+    except KeyboardInterrupt:
+        print("\nCommand input cancelled.")
+        return
+    os.system(command)

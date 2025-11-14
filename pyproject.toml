@@ -1,22 +1,23 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
 name = "nlshell"
 version = "0.1.1"
 description = "Creates shell command from a description using an LLM"
-authors = ["Mattias Brycke <mattias.brycke@gmail.com>"]
-license = "MIT"
+authors = [{ name = "Mattias Brycke", email = "mattias.brycke@gmail.com" }]
+requires-python = "~=3.10"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-openai = "^1.52.2"
-
-[tool.poetry.scripts]
-c = "nlshell.main:main"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+license = "MIT"
+dependencies = [
+    "openai>=2.6.1",
+    "prompt-toolkit>=3.0.52",
+]
 
 [project.urls]
+
+[project.scripts]
+c = "nlshell.main:main"
 
 

@@ -4,7 +4,7 @@ import os
 
 SETTINGS_FILE_PATH = os.path.expanduser("~/.config/nlshell/settings.ini")
 DEFAULT_URL = "http://localhost:11434/v1"  # default url for local ollama
-DEFAULT_MODEL = "qwen2.5-coder:7b"
+DEFAULT_MODEL = "qwen3:8b"
 
 
 @functools.lru_cache(maxsize=None)
@@ -50,13 +50,17 @@ def handle_warning_message():
         print("Disable this warning by running 'c --disable-warning'")
 
 
-def get_base_url():
+def get_base_url(local=False):
     """
     Retrieve the base url from the settings file.
     If the base url is not set, get input from the user.
     """
+    if local:
+        config_section = "ollama-local"
+    else:
+        config_section = "default"
 
-    base_url = get_config("default", "base_url")
+    base_url = get_config(config_section, "base_url")
     if not base_url:
         base_url = input(
             f"Base URL for LLM is not set. \nEnter the base url for the API (default {DEFAULT_URL} (local ollama)): "
@@ -67,13 +71,17 @@ def get_base_url():
     return base_url
 
 
-def get_model():
+def get_model(local=False):
     """
     Retrieve the model from the settings file.
     If the model is not set, get input from the user.
     """
+    if local:
+        config_section = "ollama-local"
+    else:
+        config_section = "default"
 
-    model = get_config("default", "model")
+    model = get_config(config_section, "model")
     if not model:
         model = input(
             f"Model for LLM is not set. \nEnter the model for the API: (default {DEFAULT_MODEL}): "
