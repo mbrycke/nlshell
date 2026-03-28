@@ -2,6 +2,21 @@ import configparser
 import functools
 import os
 
+"""example settings.ini file:
+
+[open-router]
+base_url = https://openrouter.ai/api/v1/
+model = openai/gpt-oss-120b
+
+[ollama-local]
+base_url = http://localhost:11434/v1
+model = hopephoto/Qwen3-4B-Instruct-2507_q8
+
+[default]
+model_mode = open-router
+
+"""
+
 SETTINGS_FILE_PATH = os.path.expanduser("~/.config/nlshell/settings.ini")
 DEFAULT_URL = "http://localhost:11434/v1"  # default url for local ollama
 DEFAULT_MODEL = "qwen3:8b"
@@ -50,15 +65,15 @@ def handle_warning_message():
         print("Disable this warning by running 'c --disable-warning'")
 
 
-def get_base_url(local=False):
+def get_base_url(model_mode="ollama-local"):
     """
-    Retrieve the base url from the settings file.
+    Retrieve the base url from the settings file based on model mode.
     If the base url is not set, get input from the user.
     """
-    if local:
+    if model_mode == "ollama-local":
         config_section = "ollama-local"
     else:
-        config_section = "default"
+        config_section = "open-router"
 
     base_url = get_config(config_section, "base_url")
     if not base_url:
@@ -67,19 +82,21 @@ def get_base_url(local=False):
         )
         if not base_url:
             base_url = DEFAULT_URL
-        set_config("default", "base_url", base_url)
+        set_config(config_section, "base_url", base_url)
     return base_url
 
 
-def get_model(local=False):
+def get_model(model_mode):
     """
-    Retrieve the model from the settings file.
+    Retrieve the model from the settings file based on model mode.
     If the model is not set, get input from the user.
     """
-    if local:
+    if model_mode == "ollama-local":
         config_section = "ollama-local"
+    elif model_mode == "open-router":
+        config_section = "open-router"
     else:
-        config_section = "default"
+        raise ValueError(f"Invalid model mode: {model_mode}")
 
     model = get_config(config_section, "model")
     if not model:
@@ -88,20 +105,28 @@ def get_model(local=False):
         )
         if not model:
             model = DEFAULT_MODEL
-        set_config("default", "model", model)
+        set_config(config_section, "model", model)
     return model
+
+
+def get_model_mode():
+    """
+    Get the current model mode (local or open-router) from settings.
+    Defaults to 'local' if not set.
+    """
+    mode = get_config("default", "model_mode")
+    if not mode:
+        mode = "ollama-local"
+    return mode
 
 
 def get_api_key():
     """
-    Retrieve the API key from the settings file.
-    If the API key is not set, get input from the user.
+    Retrieve API key from environment variable only.
     """
-
-    api_key = get_config("default","api_key")
+    api_key = os.environ.get("NLSHELL_API_KEY")
     if not api_key:
-        api_key = input(
-            f"API key for OpenAI is not set. \nEnter the API key for the API: "
+        raise ValueError(
+            "NLSHELL_API_KEY is not set. Please export NLSHELL_API_KEY in your shell environment."
         )
-        set_config("default","api_key",api_key)
     return api_key
